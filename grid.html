@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSS grid </title>
+    <link rel="stylesheet" href="css/grid.css">
+</head>
+<body>
+    <div id="intro">
+        <h3>TURN: <span id="turn"></span> DICE-VALUE: <span id="dice_val">...</span></h3>
+        <h3><span id="roller">Press Space to Roll the Dice.</span></h3>
+    </div>
+    <div class="container" id="board_container">
+        <div id="board">
+        
+        </div>
+    </div>
+
+    <div class="button_container">
+        <button id='roll_button' class='button'>Roll Dice: <span id="dice_val_button">...</span></button>
+    </div>
+
+    <div id="intro">
+        <h3 id="data">create a room/ Join a room to start the game</h3>
+    </div>
+
+    <div class="room_buttons">
+        <button onClick="createRoom()" id='roll_button' class='rbutton'>Create room</button><br>
+    </div>
+    <br>
+
+    <div class="room_buttons">
+        <button onClick="joinRoom()" id='roll_button' class='rbutton'>Join room</button><br>
+        <input type="text" class="ip">
+    </div>
+    
+    
+    <script src="https://cdn.socket.io/3.1.3/socket.io.min.js"></script>
+    <script src="js/grid.js" type="text/javascript"></script>
+</body>
+</html>
