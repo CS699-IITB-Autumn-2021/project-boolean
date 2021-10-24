@@ -1,0 +1,204 @@
+/* https://getcssscan.com/css-buttons-examples */
+*{
+    background-color: rgb(2, 53, 53);
+}
+.container{
+    background-color: rgb(2, 53, 53);
+    min-height: 70vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+#board{
+    background-color:white;
+    background-image: url('../img/board7.png');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    width:80vmin;
+    height: 80vmin;
+    border: 1px solid black;
+    justify-content: center;
+    display: grid;
+    /* grid-template-rows: 100px 100px 100px;
+    grid-template-columns: 100px 100px 100px; */
+    grid-template-rows: repeat(10,1fr);
+    grid-template-columns: repeat(10,1fr);
+    row-gap: 1px;
+    column-gap: 1px;
+    border: 2px solid rgb(11, 236, 67);
+}
+#intro{
+    /* margin:4px ; */
+    text-align: center;
+}
+h3,h1{
+    color:honeydew;
+}
+
+span{
+    margin-right: 15px;
+}
+#roller{
+    cursor: pointer;
+}
+#roller:hover{
+    color: aqua;
+}
+/* <!-- HTML !-->
+<button class="button" role="button">Button 3</button> */
+
+/* CSS */
+.button_container{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#dice_val_button{
+    background-color: #2ea44f;
+}
+#dice_val_button:hover {
+    background-color: #2c974b;
+}
+
+.button {
+  appearance: none;
+  background-color: #2ea44f;
+  border: 1px solid rgba(27, 31, 35, .15);
+  border-radius: 6px;
+  box-shadow: rgba(27, 31, 35, .1) 0 1px 0;
+  box-sizing: border-box;
+  color: #fff;
+  cursor: pointer;
+  display: inline-block;
+  font-family: -apple-system,system-ui,"Segoe UI",Helvetica,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji";
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 20px;
+  padding: 6px 16px;
+  position: relative;
+  /* text-align: center; */
+  text-decoration: none;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  vertical-align: middle;
+  white-space: nowrap;
+  font-size: 20px;
+}
+
+.button:focus:not(:focus-visible):not(.focus-visible) {
+  box-shadow: none;
+  outline: none;
+}
+
+.button:hover {
+  background-color: #2c974b;
+  
+}
+
+.button:focus {
+  box-shadow: rgba(46, 164, 79, .4) 0 0 0 3px;
+  outline: none;
+}
+
+.button:disabled {
+  background-color: #94d3a2;
+  border-color: rgba(27, 31, 35, .1);
+  color: rgba(255, 255, 255, .8);
+  cursor: default;
+}
+
+.button:active {
+  background-color: #298e46;
+  box-shadow: rgba(20, 70, 32, .2) 0 1px 0 inset;
+}
+
+.item1{
+    background-color: rgb(248, 237, 134);
+    width: 100%;
+    height: 100%;
+}
+.item2{
+    background-color: rgb(236, 162, 92);
+    width: 100%;
+    height: 100%;
+}
+
+.position1{
+    margin: 35% 40% 15% 10%;
+    /* margin: 25% 30% 15% 10%; */
+    /* position: absolute; */
+    background-color: rgb(14, 221, 66);
+    border-radius: 50%;
+    border: 1px solid rgb(0, 0, 0);
+}
+.position2{
+    margin: 35% 10% 15% 40%;
+    /* margin: 25% 10% 15% 30%; */
+    /* position: absolute; */
+    background-color: rgb(241, 34, 34);
+    border-radius: 50%;
+    border: 1px solid rgb(0, 0, 0);
+}
+
+.blinker1{
+    cursor: pointer;
+    animation: animate1 1s linear infinite;
+}
+
+@keyframes animate1 {
+    0% {
+        opacity: 0.4;
+        margin: 35% 40% 15% 10%;
+    }
+
+    50% {
+        opacity: 1;
+        margin: 32% 37% 15% 10%;
+    }
+
+    100% {
+        opacity: 0.6;
+        margin: 35% 40% 15% 10%;
+    }
+}
+
+.blinker2{
+    cursor: pointer;
+    animation: animate2 1s linear infinite;
+}
+
+@keyframes animate2 {
+    0% {
+        opacity: 0.4;
+        margin: 35% 10% 15% 40%;
+    }
+
+    50% {
+        opacity: 1;
+        margin: 32% 10% 15% 37%;
+    }
+
+    100% {
+        opacity: 0.6;
+        margin: 35% 10% 15% 40%%;
+    }
+}
+
+.grid_image{
+    position: relative;
+    width:100%;
+}
+
+
+@media only screen and (max-width: 800px) {
+    .container{
+        min-height: 80vh;
+    }
+    #board{
+        width:95vmin;
+        height: 95vmin;
+    }
+}
