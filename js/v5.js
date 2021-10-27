@@ -1,15 +1,7 @@
-/* window.onbeforeunload = function () {
-    return 'Refreshing will make you lose your current progress\nDo you really want to continue';
-} */
-
-
-
-document.getElementById("board_container").style.display = "none";
-document.getElementById("roll_button").style.display = "none";
 
 
 // GLOBAL VARIABLES
-let speed = 200; //for determining movement speed of markers
+let speed = 200; //for determining movement speed of cursor
 let turn = true; //(turn==true)=>green && (turn==false)=>red
 let dice_val = 0; //random value generated on dice roll
 let space_enabled = true; // if true then the space buttton/roll_dice_button will work
@@ -19,7 +11,7 @@ var intervalID1 ; // this variables is used to disable the set-interval when
 var intervalID2 ; // the markers have reached their desired locations
 
 // STATING THAT INITIAL TURN WILL BE OF GREEN
-document.getElementById('turn').innerHTML = "YOUR TURN";
+document.getElementById('turn').innerHTML = "GREEN";
 
 // INITIALIZING THE CO-ORDINATES OF PLAYERS
 player1 = {x:10, y:1, z:1};
@@ -30,103 +22,13 @@ player2 = {x:10, y:1, z:1};
 //player2 = {x:1, y:5, z:96};
 
 
-//====================== NETWORKING PART ==================================
-
-var canMove=true;
-var gameStarted=0;
-//const socket = io('http://localhost:3001');
-const socket = io('https://server-snl.herokuapp.com/');
-socket.on('connected', connect());
-
-socket.on('id',(msg) => {
-    document.getElementById("data").innerHTML="Room id: "+msg;
-    document.querySelector('.createRoom_button').remove();
-    document.querySelector('.joinRoom_button').remove();
-});
-
-socket.on('move',()=> {
-    console.log("Got permission to move");
-    canMove=true;
-    setTurn()
-});
-
-socket.on('joined', () => {
-    console.log("turn false");
-    canMove = false;
-    turn = false;
-    change_colors();
-    document.getElementById('turn').innerHTML = "OPPONENT'S TURN";
-    document.getElementById("data").innerHTML = "Opponent will start the game";
-    document.querySelector('.createRoom_button').remove();
-    document.querySelector('.joinRoom_button').remove();
-});
-
-socket.on('err',(msg) => {
-    //console.log(msg);
-    document.getElementById("data").innerHTML = msg; 
-});
-
-socket.on('gameStarted', () => {
-    gameStarted=1;
-    document.getElementById("board_container").style.display = "flex";
-    document.getElementById("roll_button").style.display = "inline-block";
-
-});
-
-socket.on('reflect',(msg) => {
-    console.log("Reflected");
-    turn = false;
-    dice_val = parseInt(msg);
-    document.getElementById('dice_val_button').innerHTML = dice_val ;
-    document.getElementById('dice_val').innerHTML = dice_val ;
-    gameEngine();
-    socket.emit('ack');
-})
-
-function connect()
-{
-    console.log("Connection established");
-}
-
-function createRoom()
-{
-    socket.emit('createRoom');
-}
-
-function joinRoom()
-{
-    console.log("clicked");
-    const msg = document.querySelector('.ip').value;
-    document.querySelector('.ip').value ="";
-    socket.emit('joinRoom', msg);
-}
-
-function setTurn()
-{
-    turn=true;
-    console.log("turn set");
-    document.getElementById("data").innerHTML="";
-}
-
-
-
-//===================== NETWORKING PART ENDS ==============================
-
-
-
-
-
-
-
 //====================== DISPLAY PLAYER FUNCTION ===========================
 
- /**
-     * display_players() takes the global values of player1 and player2 coordinates,
-    creates a div element with id(pos1 and pos2) and class(position1 and position2)
-    and paints the markers to the screen
-     */
-
 function display_players() {
+    // display_players() takes the global values of player1 and player2 coordinates,
+    // creates a div element with id(pos1 and pos2) and class(position1 and position2)
+    // and paints the markers to the screen
+
     // Display the player1(Green)
     position1 = document.createElement('div');
     position1.id = 'pos1';
@@ -146,13 +48,8 @@ function display_players() {
 display_players();
 
 
-// ================== X & Y VALUE FINDING FUNCTIONS ======================
 
-/**
- * x_val(z) takes the z co-ordinate as input and returns its corresponding value of 'x'
- * @param {int} z the value of z-coordinate
- * @returns {int} x the x-coordinate value corresponding to z
- */
+// ================== X & Y VALUE FINDING FUNCTIONS ======================
 
 function x_val(z) {
     // x_val(z) takes the z co-ordinate as input and returns its corresponding 
@@ -160,11 +57,7 @@ function x_val(z) {
     return 10-Math.floor((z-1)/10);
 } 
 
-/**
- * x_val(z) takes the z co-ordinate as input and returns its corresponding value of 'y'
- * @param {int} z the value of z-coordinate
- * @returns {int} y the x-coordinate value corresponding to z
- */
+
 function y_val(z) {
     // y_val(z) takes the z co-ordinate as input and returns its corresponding 
     // value of 'y'
@@ -183,13 +76,6 @@ function y_val(z) {
 
 // ======================= ROLL DICE EFUNCTION ============================
 
-/**
- * rollDice simply rolls the dice and updates the dice_val
- * @param {int} a the start of the range of values the die can take(generally a=1)
- * @param {int} b the start of the range of values the die can take(generally b=6)
- * @param {bool} turn turn is used to indicate if it is the turn of the current player
- * @returns {int} 
- */
 function rollDice(a,b, turn) { 
     // rollDice simply rolls the dice and updates the dice_val
     if(turn){
@@ -201,21 +87,39 @@ function rollDice(a,b, turn) {
         document.getElementById('pos2').classList.add('blinker2');
     }
     dice_val = Math.round(a+(b-a)*Math.random());
-    //dice_val = 1;
-    //socket.emit('dieValue',""+dice_val);
+    //dice_val = 7;
+    //console.log("dice value " +dice_val);
     document.getElementById('dice_val').innerHTML = dice_val ;
     document.getElementById('dice_val_button').innerHTML = dice_val ;
+
+    // condition checking when the marker goes beyond 100
+    /* if(turn===true && player1.z +dice_val> 100){
+        space_enabled = true;
+        enter_enabled = false;
+        turn = !turn;
+        return dice_val;
+
+    }
+    else if(turn===false && player2.z +dice_val> 100){
+        console.log("player2 dice value: "+(player2.z +dice_val));
+        space_enabled = true;
+        enter_enabled = false;
+        turn = !turn;
+        return dice_val;
+    } */
+    // gameEngine();
+    
+    // enabling the Enter in-order to move the markers
     enter_enabled=true; 
     
     document.getElementById('roller').innerHTML = "Press Enter to move the Dice." ;
     return dice_val;
 } 
 
-/**
- * gameEngine() takes the global variable dice_val, checks the turn value, 
- * calls move1/move2 with setInterval respectively to move the makers to their new location
- * after moving it just switches the value of turn variable and gives chance to the other player
- */
+
+
+
+
 
 function gameEngine(){
     // gameEngine() takes the dice_val as arguement, checks the turn value, 
@@ -224,14 +128,11 @@ function gameEngine(){
     
     console.log("turn "+turn);
     if(turn){
-        // document.getElementById('turn').innerHTML = "OPPONENT'S TURN";
+        document.getElementById('turn').innerHTML = "RED";
         if(player1.z+dice_val>100){
             dice_val = 0;
         }
         intervalID1 = setInterval(move1, speed, player1.z+dice_val);
-        socket.emit('dieValue',""+dice_val);
-
-        
 
         console.log("player1.x "+player1.x);
         console.log("player1.y "+player1.y);
@@ -241,7 +142,7 @@ function gameEngine(){
         if(player2.z+dice_val>100){
             dice_val = 0;
         }
-        //document.getElementById('turn').innerHTML = "YOUR TURN";
+        document.getElementById('turn').innerHTML = "GREEN";
         intervalID2 = setInterval(move2, speed, player2.z+dice_val);
         console.log("player2.x "+player2.x);
         console.log("player2.y "+player2.y);
@@ -261,45 +162,42 @@ function gameEngine(){
         alert("Game Over. Winner is Red!\nRefresh to start a new game ");
     }
     
-    //turn !=turn
-    turn = false;
+    turn = !turn;
     // change_colors();
     
 }
+
+
+
+
+
 
 window.addEventListener('keydown', e => {
     // listens which key is presessed the does the actions
     switch(e.key){
         case " ":
-            console.log("canMove:",canMove);
-            if(canMove)
-            {
-                if(space_enabled){
-                    space_enabled = false;
-                    canMove = false;
-                    console.log("Space");
-                    rollDice(1,6, turn);
-                    if(turn){
-                        document.getElementById('pos1').onclick=function(){
-                            click_div();
-                        };
-                    }
-                    else{
-                        document.getElementById('pos2').onclick=function(){
-                            click_div();
-                        };
-                    }
-                    /* turn = !turn; */
+            if(space_enabled){
+                space_enabled = false;
+                
+                console.log("Space");
+                rollDice(1,6, turn);
+                if(turn){
+                    document.getElementById('pos1').onclick=function(){
+                        click_div();
+                    };
                 }
+                else{
+                    document.getElementById('pos2').onclick=function(){
+                        click_div();
+                    };
+                }
+                /* turn = !turn; */
             }
-            else
-                document.getElementById("data").innerHTML="Wait for you turn";
             break;
         case "Enter":
             if(enter_enabled){
                 enter_enabled = false;
                 console.log("Enter");
-                //document.getElementById("data").innerHTML = "Opponent's turn";
                 gameEngine();
             }
         default:
@@ -309,7 +207,6 @@ window.addEventListener('keydown', e => {
 });
 
 // ==================ADDING THE ON-CLICK EVENTS======================
-
 
 function click_div() {
     if(enter_enabled){
@@ -328,46 +225,29 @@ document.getElementById('roll_button').onclick=function(){
 
 function roller_clicked() {
     console.log("roller clicked");
-    if(canMove)
-    {
-        if(space_enabled){
-            space_enabled = false;
-            canMove = false;
-            console.log("Space");
-            rollDice(1,6, turn);
-            if(turn){
-                document.getElementById('pos1').onclick=function(){
-                    click_div();
-                };
-            }
-            else{
-                document.getElementById('pos2').onclick=function(){
-                    click_div();
-                };
-            }
-            /* turn = !turn; */
-        }
-    }
-    else{
-        if(turn==false){
-            document.getElementById("data").innerHTML="Wait for you turn";
+    if(space_enabled){
+        space_enabled = false;
+        
+        console.log("Space");
+        rollDice(1,6, turn);
+        if(turn){
+            document.getElementById('pos1').onclick=function(){
+                click_div();
+            };
         }
         else{
-            document.getElementById("data").innerHTML="Click on your coin to move";
+            document.getElementById('pos2').onclick=function(){
+                click_div();
+            };
         }
+        /* turn = !turn; */
     }
-
 }
 
 
 // ====================== move functions ==========================
 
-/**
- * move1 function takes the new position of the marker by the z-coordinate of the current player 
- * and sequentially moves it to the new position step by step.
- * @param {int} z 
- * @returns 
- */
+
 function move1(z=100) {
     if (player1.z === z) {
         window.clearInterval(intervalID1);
@@ -407,7 +287,7 @@ function move1(z=100) {
         if(player1.z===100 ){
             
             setTimeout(() => {
-                alert("Hurray!\n You won the game!\nRefresh to start a new game");
+                alert("Game Over. Winner is Green!\nRefresh to start a new game");
             }, speed+100);
             
             
@@ -417,12 +297,7 @@ function move1(z=100) {
         //change_colors();
     }
 }
-/**
- * move1 function takes the new position of the marker by the z-coordinate of the opponent player 
- * and sequentially moves it to the new position step by step.
- * @param {int} z 
- * @returns 
- */
+
 function move2(z=100) {
     if (player2.z === z) {
         window.clearInterval(intervalID2);
@@ -461,7 +336,7 @@ function move2(z=100) {
         //document.getElementById('pos1').classList.add('blinker1');
         if(player2.z===100){
             setTimeout(() => {
-                alert("You lost!\nBetter luck next time.\nRefresh to start a new game");
+                alert("Game Over. Winner is Red!\nRefresh to start a new game");
             }, speed+100);
         
         }
@@ -475,11 +350,6 @@ function move2(z=100) {
 
 // ============================= CHECK FUNCTION ==========================
 
-/**
- * check() determines if the markers have landed on some snake or ladder,
- * if it lands on such event it updates the position markers and calls
- * the display_players() function to paint the markers to its updated location
- */
 function check() {
     // check() determines if the markers have landed on some snake or ladder,
     // if it lands on such event it updates the position markers and calls
@@ -569,36 +439,16 @@ function check() {
             display_players();
         }, speed+100);
     }
-
-    setTimeout(() => {
-        document.getElementById('dice_val').innerHTML = "..." ;
-        document.getElementById('dice_val_button').innerHTML = "..." ;
-    }, 2*speed);
-    
+    document.getElementById('dice_val').innerHTML = "..." ;
+    document.getElementById('dice_val_button').innerHTML = "..." ;
     document.getElementById('roller').innerHTML = "Press Space to Roll the Dice." ;
     space_enabled = true;
-    // setTimeout(change_colors, speed);
-    
-    
-    setTimeout(() => {
-        if(turn){
-            document.getElementById('turn').innerHTML = "YOUR TURN";
-        }
-        else{
-            document.getElementById('turn').innerHTML = "OPPONENT'S TURN";
-            document.getElementById('pos2').classList.add('blinker2');
-        }
-        change_colors();
-    }, speed*1.5);
-    
+    setTimeout(change_colors, speed);
 }
 
 
 // ================== changing colors ====================
 
-/**
- * changes the border color and button color when turn is changed
- */
 function change_colors() {
     console.log("change-colors function entered");
     if(turn){
@@ -615,9 +465,7 @@ function change_colors() {
     }
 }
 
-/**
- * displays the empty board
- */
+
 
 function display_board() {
     // FOR DISPLAYING THE EMPTY BOARD(NO NEED WHEN USING BACKGROUND IMAGE)
@@ -653,4 +501,55 @@ function display_board() {
     } 
     
 
-}
+}//display_board();
+
+
+
+
+
+
+
+
+
+
+
+// PREVIOUS GAME-ENGINE
+
+/* function    gameEngine(){
+    
+    console.log("turn "+turn);
+    if(turn){
+        document.getElementById('turn').innerHTML = "RED";
+        player1 = {x: x_val(player1.z+dice_val), y: y_val(player1.z+dice_val), z:player1.z+dice_val};
+        //console.log("player1.x "+player1.x);
+        //console.log("player1.y "+player1.y);
+        console.log("player1.z "+player1.z);
+    }
+    else{
+        document.getElementById('turn').innerHTML = "GREEN";
+        player2 = {x: x_val(player2.z+dice_val), y: y_val(player2.z+dice_val), z:player2.z+dice_val};
+        //console.log("player2.x "+player2.x);
+        //console.log("player2.y "+player2.y);
+        console.log("player2.z "+player2.z);
+    }
+    
+    // Clearing the inputs
+    document.getElementById('pos1').remove();
+    document.getElementById('pos2').remove();
+
+    console.log("player1.x "+player1.x);
+    console.log("player1.y "+player1.y);
+    console.log("player1.z "+player1.z);
+    //Display the Players
+    display_players(player1, player2);
+
+    check();
+
+    if(player1.z===100 ){
+        alert("Game space_enabled. Winner is Green! ");
+    }
+    if(player2.z===100){
+        alert("Game space_enabled. Winner is Red! ");
+    }
+
+} */
