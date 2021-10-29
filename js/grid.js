@@ -1,8 +1,6 @@
-/* window.onbeforeunload = function () {
-    return 'Refreshing will make you lose your current progress\nDo you really want to continue';
-} */
-
-
+// This is the JavaScript file for the client part of Snakes & Ladders
+// and is linked to grid.html
+// [v1, v2, v3, v4, v5, v6].js are just backup versions of grid.js
 
 document.getElementById("board_container").style.display = "none";
 document.getElementById("roll_button").style.display = "none";
@@ -12,7 +10,7 @@ document.getElementById("roll_button").style.display = "none";
 let speed = 200; //for determining movement speed of markers
 let turn = true; //(turn==true)=>green && (turn==false)=>red
 let dice_val = 0; //random value generated on dice roll
-let space_enabled = true; // if true then the space buttton/roll_dice_button will work
+let space_enabled = false; // if true then the space buttton/roll_dice_button will work
 let enter_enabled = false; // if true then the ENTER button will work
 
 var intervalID1 ; // this variables is used to disable the set-interval when 
@@ -47,6 +45,8 @@ socket.on('id',(msg) => {
 socket.on('move',()=> {
     console.log("Got permission to move");
     canMove=true;
+    document.getElementById('roller').innerHTML = "Press Space to Roll the Dice." ;
+    //document.querySelector('.hide').style.display = "none"
     setTurn()
 });
 
@@ -57,20 +57,34 @@ socket.on('joined', () => {
     change_colors();
     document.getElementById('turn').innerHTML = "OPPONENT'S TURN";
     document.getElementById("data").innerHTML = "Opponent will start the game";
+    document.getElementById('roller').innerHTML = "Opponent will start the game";
     document.querySelector('.createRoom_button').remove();
     document.querySelector('.joinRoom_button').remove();
+
+    //document.querySelector('.hide').style.display = "none"
 });
 
 socket.on('err',(msg) => {
     //console.log(msg);
-    document.getElementById("data").innerHTML = msg; 
+    // document.getElementById("data").innerHTML = msg; 
+    // document.getElementById('roller').innerHTML = msg;
+    document.getElementById("data").innerHTML = "Opponent Disconnected! Click to close the game"; 
+    document.getElementById('roller').innerHTML = "Opponent Disconnected! Click to close the game";
+    document.getElementById('data').style.cursor="pointer"
+    document.getElementById('roller').onclick=function(){
+        window.location.reload();
+    };
+    document.getElementById('data').onclick=function(){
+        window.location.reload();
+    };
 });
 
 socket.on('gameStarted', () => {
     gameStarted=1;
     document.getElementById("board_container").style.display = "flex";
     document.getElementById("roll_button").style.display = "inline-block";
-
+    space_enabled = true;
+    //document.getElementById('roller').innerHTML = "Press Space to Roll the Dice." ;
 });
 
 socket.on('reflect',(msg) => {
@@ -83,15 +97,28 @@ socket.on('reflect',(msg) => {
     socket.emit('ack');
 })
 
+/**
+ * This function is called when client successfully connects to the server.
+ */
+
 function connect()
 {
     console.log("Connection established");
 }
 
+/**
+ * Asks the server to create a room
+ */
+
 function createRoom()
 {
     socket.emit('createRoom');
 }
+
+/**
+ * This function is called when the client wants to join a room.
+ * It sends a room id of the room into which it wants to join, to server.
+ */
 
 function joinRoom()
 {
@@ -100,6 +127,10 @@ function joinRoom()
     document.querySelector('.ip').value ="";
     socket.emit('joinRoom', msg);
 }
+
+/**
+ * This functions sets the turn to the cuurent player so that he/she can make his move.
+ */
 
 function setTurn()
 {
@@ -207,7 +238,7 @@ function rollDice(a,b, turn) {
     document.getElementById('dice_val_button').innerHTML = dice_val ;
     enter_enabled=true; 
     
-    document.getElementById('roller').innerHTML = "Press Enter to move the Dice." ;
+    document.getElementById('roller').innerHTML = "Click your coin or hit Enter to move" ;
     return dice_val;
 } 
 
@@ -292,8 +323,16 @@ window.addEventListener('keydown', e => {
                     /* turn = !turn; */
                 }
             }
-            else
-                document.getElementById("data").innerHTML="Wait for you turn";
+            else{
+                if(turn==false){
+                    document.getElementById("data").innerHTML="Wait for you turn";
+                    document.getElementById('roller').innerHTML = "Wait for you turn" ;
+                }
+                else{
+                    document.getElementById("data").innerHTML="Click your coin or hit Enter to move";
+                    document.getElementById('roller').innerHTML = "Click your coin or hit Enter to move" ;
+                }
+            }
             break;
         case "Enter":
             if(enter_enabled){
@@ -349,11 +388,14 @@ function roller_clicked() {
         }
     }
     else{
+        //if(!enter_enabled)return;
         if(turn==false){
             document.getElementById("data").innerHTML="Wait for you turn";
+            document.getElementById('roller').innerHTML = "Wait for you turn" ;
         }
         else{
-            document.getElementById("data").innerHTML="Click on your coin to move";
+            document.getElementById("data").innerHTML="Click your coin or hit Enter to move";
+            document.getElementById('roller').innerHTML = "Click your coin or hit Enter to move" ;
         }
     }
 
@@ -576,6 +618,7 @@ function check() {
     }, 2*speed);
     
     document.getElementById('roller').innerHTML = "Press Space to Roll the Dice." ;
+    document.getElementById("data").innerHTML="";
     space_enabled = true;
     // setTimeout(change_colors, speed);
     
@@ -654,3 +697,6 @@ function display_board() {
     
 
 }
+
+
+// References: Mostly made from scratch

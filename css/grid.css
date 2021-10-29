@@ -1,10 +1,12 @@
+/* This is the CSS part of SNAKE Game and is linked to snake.html */
+
 /* https://getcssscan.com/css-buttons-examples */
 *{
     background-color: rgb(2, 53, 53);
 }
 .container{
     background-color: rgb(2, 53, 53);
-    min-height: 70vh;
+    min-height: 65vh;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -45,10 +47,19 @@ span{
 #roller:hover{
     color: aqua;
 }
+
+#roller{
+    cursor: default;
+}
+#data:hover{
+    color: aqua;
+}
 /* <!-- HTML !-->
 <button class="button" role="button">Button 3</button> */
 
 /* CSS */
+
+/* https://getcssscan.com/css-buttons-examples */
 .button_container{
     display: flex;
     align-items: center;
@@ -262,8 +273,9 @@ span{
 }
 
 @media only screen and (max-width: 800px) {
+
     .container{
-        min-height: 80vh;
+        min-height: 60vh;
     }
     #board{
         width:95vmin;
